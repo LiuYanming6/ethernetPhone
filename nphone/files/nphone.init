@@ -1,0 +1,23 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+USE_PROCD=1
+
+seread_start() {
+    local flag="$(uci get mesh.nphone.enable)"
+    if [ $flag -eq 1 ];then
+        # drop these package in the code
+        #local ipaddr="$(uci get network.lan.ipaddr)"
+        #iptables -I INPUT -i br-lan -p udp --destination-port 60000 -s $ipaddr -d 255.255.255.255 -j DROP
+        ip route add broadcast 255.255.255.255 dev br-lan
+	    procd_open_instance
+	    procd_set_param command /usr/bin/nplay
+	    procd_set_param respawn
+	    procd_close_instance
+    fi
+}
+
+start_service() {
+	seread_start
+}
+
